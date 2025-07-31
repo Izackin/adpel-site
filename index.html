@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <!-- SwiperJS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     .swiper-pagination-bullet {
       background: #a259ff !important;
@@ -200,48 +201,52 @@
       }[c]));
     }
 
+    const SUPABASE_URL = "https://sjeixfuoiuuofjxaftrb.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNqZWl4ZnVvaXV1b2ZqeGFmdHJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM5Njk3NTAsImV4cCI6MjA2OTU0NTc1MH0.slO2DM-aL-ccC3gnxVDRfUf4pbFMitk1Zit9rn5Stok";
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
     // EVENTOS
-    function renderEventos() {
-  const eventos = JSON.parse(localStorage.getItem("adpel_eventos") || "[]");
-  const list = document.getElementById("eventos-list");
-  list.innerHTML = "";
-  if (!eventos.length) {
-    list.innerHTML = `<div class="text-gray-500 text-center col-span-full">Nenhum evento cadastrado ainda.</div>`;
-    return;
-  }
-  eventos.slice().reverse().forEach(ev => {
-    const card = document.createElement("div");
-    card.className = "bg-gray-800 rounded-lg shadow-lg overflow-hidden flex flex-col hover:scale-[1.03] transition cursor-pointer";
-    card.innerHTML = `
-      <img src="${ev.img}" alt="Imagem do evento" class="w-full h-48 object-cover" />
-      <div class="p-4 flex-1 flex flex-col">
-        <h3 class="text-xl font-bold mb-2">${safeHtml(ev.title)}</h3>
-        <div class="text-gray-400 mb-1 text-sm">
-          Data: ${ev.data ? ev.data.split('-').reverse().join('/') : "-"}<br>
-          Início: <span class="text-[#a259ff]">${ev.horaInicio || '-'}</span>
-          ${ev.horaFim ? `&nbsp;|&nbsp;Término: <span class="text-[#a259ff]">${ev.horaFim}</span>` : ""}
-        </div>
-        <p class="mb-4 flex-1">${safeHtml(ev.desc)}</p>
-        <div class="flex gap-2 mt-auto">
-          <a href="${getGoogleCalendarUrl(ev)}" target="_blank" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs flex items-center gap-1"><i class="fa fa-calendar-plus"></i> Google Agenda</a>
-          <a href="${getWhatsAppMsg(ev)}" target="_blank" class="bg-[#25d366] hover:bg-green-800 text-white px-3 py-1 rounded text-xs flex items-center gap-1"><i class="fa fa-whatsapp"></i> WhatsApp</a>
-          <button class="bg-[#a259ff] hover:bg-violet-700 text-white font-bold py-1 px-4 rounded ml-auto ver-mais">Ver mais</button>
-        </div>
-      </div>
-    `;
-    card.querySelector('.ver-mais').onclick = () => abrirModal(`
-      <img src="${ev.img}" class="w-full max-h-80 object-cover rounded mb-4" />
-      <h3 class="text-2xl font-bold mb-2">${safeHtml(ev.title)}</h3>
-      <div class="text-gray-400 mb-1">
-        Data: ${ev.data ? ev.data.split('-').reverse().join('/') : "-"}<br>
-        Início: <span class="text-[#a259ff]">${ev.horaInicio || '-'}</span>
-        ${ev.horaFim ? `| Término: <span class="text-[#a259ff]">${ev.horaFim}</span>` : ""}
-      </div>
-      <p class="mb-2">${safeHtml(ev.desc)}</p>
-    `);
-    list.appendChild(card);
-  });
-}
+    async function renderEventos() {
+      const { data, error } = await supabase.from('eventos').select().order('id', { ascending: false });
+      const list = document.getElementById('eventos-list');
+      list.innerHTML = '';
+      if (error || !data || !data.length) {
+        list.innerHTML = `<div class="text-gray-500 text-center col-span-full">Nenhum evento cadastrado ainda.</div>`;
+        return;
+      }
+      data.forEach(ev => {
+        const card = document.createElement('div');
+        card.className = 'bg-gray-800 rounded-lg shadow-lg overflow-hidden flex flex-col hover:scale-[1.03] transition cursor-pointer';
+        card.innerHTML = `
+          <img src="${ev.img}" alt="Imagem do evento" class="w-full h-48 object-cover" />
+          <div class="p-4 flex-1 flex flex-col">
+            <h3 class="text-xl font-bold mb-2">${safeHtml(ev.title)}</h3>
+            <div class="text-gray-400 mb-1 text-sm">
+              Data: ${ev.data ? ev.data.split('-').reverse().join('/') : "-"}<br>
+              Início: <span class="text-[#a259ff]">${ev.horaInicio || '-'}</span>
+              ${ev.horaFim ? `&nbsp;|&nbsp;Término: <span class="text-[#a259ff]">${ev.horaFim}</span>` : ''}
+            </div>
+            <p class="mb-4 flex-1">${safeHtml(ev.desc)}</p>
+            <div class="flex gap-2 mt-auto">
+              <a href="${getGoogleCalendarUrl(ev)}" target="_blank" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs flex items-center gap-1"><i class="fa fa-calendar-plus"></i> Google Agenda</a>
+              <a href="${getWhatsAppMsg(ev)}" target="_blank" class="bg-[#25d366] hover:bg-green-800 text-white px-3 py-1 rounded text-xs flex items-center gap-1"><i class="fa fa-whatsapp"></i> WhatsApp</a>
+              <button class="bg-[#a259ff] hover:bg-violet-700 text-white font-bold py-1 px-4 rounded ml-auto ver-mais">Ver mais</button>
+            </div>
+          </div>
+        `;
+        card.querySelector('.ver-mais').onclick = () => abrirModal(`
+          <img src="${ev.img}" class="w-full max-h-80 object-cover rounded mb-4" />
+          <h3 class="text-2xl font-bold mb-2">${safeHtml(ev.title)}</h3>
+          <div class="text-gray-400 mb-1">
+            Data: ${ev.data ? ev.data.split('-').reverse().join('/') : "-"}<br>
+            Início: <span class="text-[#a259ff]">${ev.horaInicio || '-'}</span>
+            ${ev.horaFim ? `| Término: <span class="text-[#a259ff]">${ev.horaFim}</span>` : ''}
+          </div>
+          <p class="mb-2">${safeHtml(ev.desc)}</p>
+        `);
+        list.appendChild(card);
+      });
+    }
 // Helper para Google Agenda
 function getGoogleCalendarUrl(ev) {
   if (!ev.data) return "#";
@@ -430,6 +435,9 @@ function getGoogleCalendarUrlEscala(es) {
 
     // Inicializar tudo
     renderEventos();
+    supabase.channel('public:eventos')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'eventos' }, () => renderEventos())
+      .subscribe();
     renderEscalas();
     renderCursos();
     renderNoticias();

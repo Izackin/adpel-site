@@ -62,6 +62,12 @@
       if (typeof renderAdminTab === "function") renderAdminTab("eventos");
     });
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://sjeixfuoiuuofjxaftrb.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNqZWl4ZnVvaXV1b2ZqeGFmdHJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM5Njk3NTAsImV4cCI6MjA2OTU0NTc1MH0.slO2DM-aL-ccC3gnxVDRfUf4pbFMitk1Zit9rn5Stok";
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  </script>
   <script src="admin.js"></script>
 </body>
 </html>
