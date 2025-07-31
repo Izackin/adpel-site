@@ -53,15 +53,26 @@ function renderTab() {
 }
 
 // ========== CRUD DE EVENTOS ==========
-// ========== CRUD DE EVENTOS (com hora, Google Agenda e WhatsApp) ==========
-function getEventos() {
-  return JSON.parse(localStorage.getItem("adpel_eventos")) || [];
+// Agora utiliza Supabase para persistência e sincronização em tempo real
+async function fetchEventos() {
+  const { data, error } = await supabase.from('eventos').select().order('id', { ascending: false });
+  if (error) { console.error('Erro ao buscar eventos', error); return []; }
+  return data || [];
 }
-function saveEventos(eventos) {
-  localStorage.setItem("adpel_eventos", JSON.stringify(eventos));
+async function insertEvento(evento) {
+  const { error } = await supabase.from('eventos').insert(evento);
+  if (error) console.error('Erro ao inserir evento', error);
+}
+async function deleteEvento(id) {
+  const { error } = await supabase.from('eventos').delete().eq('id', id);
+  if (error) console.error('Erro ao remover evento', error);
+}
+async function updateEvento(id, fields) {
+  const { error } = await supabase.from('eventos').update(fields).eq('id', id);
+  if (error) console.error('Erro ao atualizar evento', error);
 }
 function renderEventosCRUD() {
-  const container = document.getElementById("eventos-crud");
+  const container = document.getElementById('eventos-crud');
   if (!container) return;
   container.innerHTML = `
     <form id="evento-form" class="bg-gray-800 p-4 rounded-lg shadow-lg mb-8 flex flex-col md:flex-row md:items-end gap-4">
@@ -94,36 +105,33 @@ function renderEventosCRUD() {
     <div id="eventos-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
   `;
   renderEventosCards();
-  document.getElementById("evento-form").onsubmit = function(e) {
+  document.getElementById('evento-form').onsubmit = function(e) {
     e.preventDefault();
-    const title = document.getElementById("evento-title").value.trim();
-    const desc = document.getElementById("evento-desc").value.trim();
-    const data = document.getElementById("evento-data").value.trim();
-    const horaInicio = document.getElementById("evento-hora-inicio").value.trim();
-    const horaFim = document.getElementById("evento-hora-fim").value.trim();
-    const fileInput = document.getElementById("evento-img");
+    const title = document.getElementById('evento-title').value.trim();
+    const desc = document.getElementById('evento-desc').value.trim();
+    const data = document.getElementById('evento-data').value.trim();
+    const horaInicio = document.getElementById('evento-hora-inicio').value.trim();
+    const horaFim = document.getElementById('evento-hora-fim').value.trim();
+    const fileInput = document.getElementById('evento-img');
     const file = fileInput.files[0];
-    if (!file) return alert("Imagem obrigatória!");
+    if (!file) return alert('Imagem obrigatória!');
     const reader = new FileReader();
-    reader.onload = function(evt) {
-      const eventos = getEventos();
-      eventos.push({ title, desc, img: evt.target.result, data, horaInicio, horaFim });
-      saveEventos(eventos);
+    reader.onload = async function(evt) {
+      await insertEvento({ title, desc, img: evt.target.result, data, horaInicio, horaFim });
       renderEventosCards();
-      document.getElementById("evento-form").reset();
+      document.getElementById('evento-form').reset();
     };
     reader.readAsDataURL(file);
   };
 }
-function renderEventosCards() {
-  const eventos = getEventos();
-  const list = document.getElementById("eventos-list");
+async function renderEventosCards() {
+  const list = document.getElementById('eventos-list');
   if (!list) return;
-  list.innerHTML = "";
-  eventos.slice().reverse().forEach((ev, idx) => {
-    const realIdx = eventos.length - 1 - idx;
-    const card = document.createElement("div");
-    card.className = "bg-gray-800 rounded-lg shadow-lg overflow-hidden flex flex-col";
+  const eventos = await fetchEventos();
+  list.innerHTML = '';
+  eventos.forEach(ev => {
+    const card = document.createElement('div');
+    card.className = 'bg-gray-800 rounded-lg shadow-lg overflow-hidden flex flex-col';
     card.innerHTML = `
       <img src="${ev.img}" alt="Imagem do evento" class="w-full h-48 object-cover cursor-pointer visualizar-img"/>
       <div class="p-4 flex-1 flex flex-col">
@@ -131,37 +139,35 @@ function renderEventosCards() {
         <div class="text-gray-400 mb-1 text-sm">
           Data: ${ev.data ? ev.data.split('-').reverse().join('/') : "-"}<br>
           Início: <span class="text-[#a259ff]">${ev.horaInicio || '-'}</span>
-          ${ev.horaFim ? `&nbsp;|&nbsp;Término: <span class="text-[#a259ff]">${ev.horaFim}</span>` : ""}
+          ${ev.horaFim ? `&nbsp;|&nbsp;Término: <span class="text-[#a259ff]">${ev.horaFim}</span>` : ''}
         </div>
         <p class="mb-4 flex-1">${ev.desc}</p>
         <div class="flex flex-wrap gap-2 mt-auto">
           <a href="${getGoogleCalendarUrl(ev)}" target="_blank" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs flex items-center gap-1"><i class="fa fa-calendar-plus"></i> Google Agenda</a>
           <a href="${getWhatsAppMsg(ev)}" target="_blank" class="bg-[#25d366] hover:bg-green-800 text-white px-3 py-1 rounded text-xs flex items-center gap-1"><i class="fa fa-whatsapp"></i> WhatsApp</a>
-          <button class="editar bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 rounded text-xs" data-index="${realIdx}">Editar</button>
-          <button class="remover bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded text-xs" data-index="${realIdx}">Remover</button>
+          <button class="editar bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 rounded text-xs" data-id="${ev.id}">Editar</button>
+          <button class="remover bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded text-xs" data-id="${ev.id}">Remover</button>
         </div>
       </div>
     `;
     list.appendChild(card);
   });
-  list.querySelectorAll(".visualizar-img").forEach((img, idx) => {
-    img.onclick = () => abrirImagem(eventos[eventos.length-1-idx].img);
+  list.querySelectorAll('.visualizar-img').forEach((img, idx) => {
+    img.onclick = () => abrirImagem(eventos[idx].img);
   });
-  list.querySelectorAll(".remover").forEach(btn => {
-    btn.onclick = function() {
-      const idx = parseInt(this.getAttribute("data-index"));
-      if (confirm("Remover este evento?")) {
-        const eventos = getEventos();
-        eventos.splice(idx, 1);
-        saveEventos(eventos);
+  list.querySelectorAll('.remover').forEach(btn => {
+    btn.onclick = async function() {
+      const id = this.getAttribute('data-id');
+      if (confirm('Remover este evento?')) {
+        await deleteEvento(id);
         renderEventosCards();
       }
     };
   });
-  list.querySelectorAll(".editar").forEach(btn => {
+  list.querySelectorAll('.editar').forEach(btn => {
     btn.onclick = function() {
-      const idx = parseInt(this.getAttribute("data-index"));
-      editarEvento(idx);
+      const id = this.getAttribute('data-id');
+      editarEvento(id);
     };
   });
 }
@@ -188,9 +194,9 @@ function getWhatsAppMsg(ev) {
   if (ev.desc) msg += `\n${ev.desc}`;
   return "https://wa.me/?text=" + encodeURIComponent(msg);
 }
-function editarEvento(idx) {
-  const eventos = getEventos();
-  const ev = eventos[idx];
+async function editarEvento(id) {
+  const eventos = await fetchEventos();
+  const ev = eventos.find(e => e.id == id);
   if (!ev) return;
   const modal = document.createElement("div");
   modal.className = "fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50";
@@ -218,27 +224,28 @@ function editarEvento(idx) {
   document.body.appendChild(modal);
   document.getElementById("editar-form").onsubmit = function(e) {
     e.preventDefault();
-    ev.title = document.getElementById("edit-title").value.trim();
-    ev.desc = document.getElementById("edit-desc").value.trim();
-    ev.data = document.getElementById("edit-data").value.trim();
-    ev.horaInicio = document.getElementById("edit-hora-inicio").value.trim();
-    ev.horaFim = document.getElementById("edit-hora-fim").value.trim();
+    const fields = {
+      title: document.getElementById("edit-title").value.trim(),
+      desc: document.getElementById("edit-desc").value.trim(),
+      data: document.getElementById("edit-data").value.trim(),
+      horaInicio: document.getElementById("edit-hora-inicio").value.trim(),
+      horaFim: document.getElementById("edit-hora-fim").value.trim()
+    };
     const file = document.getElementById("edit-img").files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = function(evt) {
-        ev.img = evt.target.result;
-        eventos[idx] = ev;
-        saveEventos(eventos);
+      reader.onload = async function(evt) {
+        fields.img = evt.target.result;
+        await updateEvento(id, fields);
         renderEventosCards();
         modal.remove();
       };
       reader.readAsDataURL(file);
     } else {
-      eventos[idx] = ev;
-      saveEventos(eventos);
-      renderEventosCards();
-      modal.remove();
+      updateEvento(id, fields).then(() => {
+        renderEventosCards();
+        modal.remove();
+      });
     }
   };
 }
