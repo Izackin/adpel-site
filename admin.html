@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Painel Administrativo - ADPEL</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    .tab-active { background: #a259ff; color: #fff; }
+    .tab-inactive { background: #374151; color: #a259ff; }
+    .logo { box-shadow: 0 0 0 4px #a259ff44; }
+  </style>
+</head>
+<body class="bg-gray-900 text-gray-200 font-sans min-h-screen flex flex-col">
+  <!-- Header -->
+  <header class="bg-gray-800 shadow-lg sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <!-- Troque para o caminho da sua logo local -->
+        <img src="logo-adpel.png" alt="Logo ADPEL" class="h-12 w-12 rounded-full logo" />
+        <h1 class="text-xl font-bold">Painel Administrativo - ADPEL</h1>
+      </div>
+      <a href="index.html" class="hover:text-[#a259ff] transition font-bold">Voltar para o site</a>
+    </div>
+  </header>
+
+  <!-- Menu de abas -->
+  <nav class="bg-gray-800 border-b border-gray-700">
+    <div class="container mx-auto flex flex-wrap justify-center py-2 space-x-2" id="admin-tabs">
+      <button class="tab-btn tab-active rounded-lg px-4 py-2 font-bold" data-tab="eventos">Eventos</button>
+      <button class="tab-btn tab-inactive rounded-lg px-4 py-2 font-bold" data-tab="escalas">Escalas</button>
+      <button class="tab-btn tab-inactive rounded-lg px-4 py-2 font-bold" data-tab="cursos">Cursos</button>
+      <button class="tab-btn tab-inactive rounded-lg px-4 py-2 font-bold" data-tab="noticias">Notícias</button>
+      <button class="tab-btn tab-inactive rounded-lg px-4 py-2 font-bold" data-tab="anotacoes">Anotações</button>
+    </div>
+  </nav>
+
+  <!-- Conteúdo dinâmico das abas -->
+  <main class="container mx-auto px-4 py-8 flex-1">
+    <div id="tab-content"></div>
+  </main>
+
+  <footer class="bg-gray-900 py-6 border-t border-gray-800 mt-8">
+    <div class="text-center text-gray-500">
+      &copy; 2025 Painel ADPEL
+    </div>
+  </footer>
+  <div id="modal-admin" class="hidden"></div>
+  <script>
+    // Abas com visual violeta
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.onclick = function() {
+        document.querySelectorAll('.tab-btn').forEach(b => b.className = b.className.replace('tab-active','tab-inactive'));
+        this.className = this.className.replace('tab-inactive','tab-active');
+        // Carregar conteúdo da aba (admin.js faz isso com base em data-tab)
+        if (typeof renderAdminTab === "function") renderAdminTab(this.getAttribute("data-tab"));
+      }
+    });
+    // Inicializa na primeira aba (eventos)
+    window.addEventListener("DOMContentLoaded", () => {
+      if (typeof renderAdminTab === "function") renderAdminTab("eventos");
+    });
+  </script>
+  <script src="admin.js"></script>
+</body>
+</html>

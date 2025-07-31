@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Curso - ADPEL</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    .aspect-w-16 { position: relative; width: 100%; padding-bottom: 56.25%; }
+    .aspect-w-16 iframe { position: absolute; top:0; left:0; width:100%; height:100%; border-radius: 0.5rem;}
+    .cor-violeta { color: #a259ff; }
+    .bg-violeta { background-color: #a259ff; }
+  </style>
+</head>
+<body class="bg-gray-900 text-gray-200 font-sans">
+  <!-- Header -->
+  <header class="bg-gray-800 shadow sticky top-0 z-40 mb-6">
+    <div class="container mx-auto px-4 py-4 flex items-center">
+      <a href="index.html" class="flex items-center space-x-2 hover:opacity-90">
+        <img src="logo-adpel.png" class="h-10 w-10 rounded-full" alt="Logo ADPEL" />
+        <span class="text-xl font-bold">ADPEL</span>
+      </a>
+      <span class="ml-auto text-sm text-gray-400 hidden md:block">Plataforma de Cursos</span>
+    </div>
+  </header>
+
+  <!-- Container do curso -->
+  <div class="container mx-auto px-4 py-6" id="curso-container">
+    <!-- Conteúdo gerado por JS -->
+  </div>
+
+  <script>
+    // Função para evitar XSS
+    function safeHtml(text) {
+      return ("" + text).replace(/[<>&"]/g, c => ({
+        '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;'
+      }[c]));
+    }
+    // Extrai o ID do curso da URL
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    // Busca os cursos do localStorage
+    const cursos = JSON.parse(localStorage.getItem("adpel_cursos") || "[]");
+    const curso = cursos.find(c => String(c.id) === String(id));
+    const container = document.getElementById('curso-container');
+    if (!curso) {
+      container.innerHTML = "<h1 class='text-2xl font-bold text-red-500'>Curso não encontrado</h1>";
+    } else {
+      container.innerHTML = `
+        <div class="mb-8 flex flex-col md:flex-row gap-8">
+          <div class="md:w-2/5 flex-shrink-0">
+            <img src="${curso.img}" class="rounded-lg shadow-xl w-full mb-4" alt="${safeHtml(curso.title)}" />
+          </div>
+          <div class="md:w-3/5 flex flex-col">
+            <h1 class="text-3xl md:text-4xl font-bold mb-2 cor-violeta">${safeHtml(curso.title)}</h1>
+            <p class="mb-4">${safeHtml(curso.desc)}</p>
+            <div class="flex flex-wrap gap-2 mt-auto">
+              <a href="index.html" class="bg-gray-700 hover:bg-gray-600 text-gray-100 font-semibold py-2 px-6 rounded-lg transition"><i class="fas fa-arrow-left mr-2"></i>Voltar</a>
+            </div>
+          </div>
+        </div>
+        <div>
+          ${Array.isArray(curso.modulos) && curso.modulos.length ? curso.modulos.map((m, idx) => `
+            <div class="mb-8 bg-gray-800 rounded-xl shadow p-6">
+              <h2 class="text-xl md:text-2xl font-bold mb-5 cor-violeta">${safeHtml(m.nome || 'Módulo ' + (idx+1))}</h2>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                ${(Array.isArray(m.aulas) ? m.aulas : []).map(a => `
+                  <div class="bg-gray-900 rounded-lg shadow p-4 flex flex-col h-full">
+                    <h3 class="text-lg font-semibold mb-1">${safeHtml(a.titulo)}</h3>
+                    <p class="mb-2 text-sm">${safeHtml(a.desc||'')}</p>
+                    ${a.link ? `
+                      <div class="aspect-w-16 mb-2">
+                        <iframe src="https://www.youtube.com/embed/${(
+                          a.link.includes('watch?v=') 
+                            ? a.link.split('watch?v=')[1].split('&')[0] 
+                            : a.link.includes('youtu.be/') 
+                              ? a.link.split('youtu.be/')[1].split('?')[0]
+                              : ''
+                        )}" frameborder="0" allowfullscreen class="rounded"></iframe>
+                      </div>
+                    ` : `<div class="text-red-400 mb-2">Aula sem vídeo cadastrado.</div>`}
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `).join('') : `<div class="text-gray-400 italic">Nenhum módulo cadastrado para este curso.</div>`}
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>

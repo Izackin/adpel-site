@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ADPEL - Igreja Pentecostal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- SwiperJS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+  <style>
+    .swiper-pagination-bullet {
+      background: #a259ff !important;
+      opacity: 0.6;
+      transition: transform .2s, opacity .2s;
+    }
+    .swiper-pagination-bullet-active {
+      background: #a259ff !important;
+      opacity: 1;
+      transform: scale(1.2);
+      box-shadow: 0 0 8px 2px #a259ff66;
+    }
+    .modal-bg { transition: opacity 0.25s; }
+    .modal-show { opacity: 1; pointer-events: all; }
+    .modal-hide { opacity: 0; pointer-events: none; }
+    .aspect-w-16 { position: relative; width: 100%; padding-bottom: 56.25%; }
+    .aspect-w-16 iframe { position: absolute; top:0; left:0; width:100%; height:100%; border-radius: 0.5rem;}
+  </style>
+</head>
+<body class="bg-gray-900 text-gray-200 font-sans">
+
+  <!-- Header/Navigation -->
+  <header class="bg-gray-800 shadow-lg sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <!-- Troque pelo caminho da sua logo -->
+        <img src="logo-adpel.png" alt="Logo ADPEL" class="h-12 w-12 rounded-full" />
+        <h1 class="text-xl font-bold">ADPEL</h1>
+      </div>
+      <nav class="hidden md:flex space-x-6">
+        <a href="#slide-0" class="hover:text-[#a259ff] transition">Eventos</a>
+        <a href="#slide-1" class="hover:text-[#a259ff] transition">Escalas</a>
+        <a href="#slide-2" class="hover:text-[#a259ff] transition">Cursos</a>
+        <a href="#slide-3" class="hover:text-[#a259ff] transition">Notícias</a>
+        <a href="#slide-4" class="hover:text-[#a259ff] transition">Anotações</a>
+      </nav>
+      <button id="menu-toggle" class="md:hidden text-xl focus:outline-none">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+    <div id="mobile-menu" class="hidden md:hidden bg-gray-700 px-4 py-2">
+      <a href="#slide-0" class="block py-2 hover:text-[#a259ff] transition">Eventos</a>
+      <a href="#slide-1" class="block py-2 hover:text-[#a259ff] transition">Escalas</a>
+      <a href="#slide-2" class="block py-2 hover:text-[#a259ff] transition">Cursos</a>
+      <a href="#slide-3" class="block py-2 hover:text-[#a259ff] transition">Notícias</a>
+      <a href="#slide-4" class="block py-2 hover:text-[#a259ff] transition">Anotações</a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section id="home" class="bg-gray-800 py-12 md:py-16">
+    <div class="container mx-auto px-4 flex flex-col md:flex-row items-center">
+      <div class="md:w-1/2 mb-8 md:mb-0">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4">
+          Bem-vindo à <span class="text-[#a259ff]">ADPEL</span>
+        </h2>
+        <p class="text-lg mb-6">
+          Uma comunidade de fé, amor e esperança. Junte-se a nós em nossos cultos e eventos.
+        </p>
+        <a href="#slide-0" class="bg-[#a259ff] hover:bg-violet-700 text-gray-900 font-bold py-2 px-6 rounded-lg transition">Ver Eventos</a>
+      </div>
+      <div class="md:w-1/2">
+        <img src="https://images.unsplash.com/photo-1435527173128-425b9127-0c8e35b07b08?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Igreja ADPEL" class="rounded-lg shadow-xl w-full" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Swiper central -->
+  <section class="py-8 md:py-14 bg-gray-900">
+    <div class="container mx-auto px-2 md:px-4">
+      <div class="swiper mySwiper rounded-xl shadow-2xl overflow-hidden">
+        <div class="swiper-wrapper">
+          <!-- Slide 1: Eventos -->
+          <div class="swiper-slide flex flex-col items-center bg-gray-900 p-6 md:p-12 min-h-[440px]">
+            <h2 class="text-2xl md:text-3xl font-bold mb-6 text-center text-[#a259ff]">Eventos</h2>
+            <div id="eventos-list" class="grid grid-cols-1 md:grid-cols-2 gap-5 w-full"></div>
+          </div>
+          <!-- Slide 2: Escalas -->
+          <div class="swiper-slide flex flex-col items-center bg-gray-900 p-6 md:p-12 min-h-[440px]">
+            <h2 class="text-2xl md:text-3xl font-bold mb-6 text-center text-[#a259ff]">Escalas</h2>
+            <div id="escalas-list" class="grid grid-cols-1 md:grid-cols-2 gap-5 w-full"></div>
+          </div>
+          <!-- Slide 3: Cursos -->
+          <div class="swiper-slide flex flex-col items-center bg-gray-900 p-6 md:p-12 min-h-[440px]">
+            <h2 class="text-2xl md:text-3xl font-bold mb-6 text-center text-[#a259ff]">Cursos</h2>
+            <div id="cursos-list" class="grid grid-cols-1 md:grid-cols-2 gap-5 w-full"></div>
+          </div>
+          <!-- Slide 4: Notícias -->
+          <div class="swiper-slide flex flex-col items-center bg-gray-900 p-6 md:p-12 min-h-[440px]">
+            <h2 class="text-2xl md:text-3xl font-bold mb-6 text-center text-[#a259ff]">Notícias</h2>
+            <div id="noticias-list" class="grid grid-cols-1 md:grid-cols-2 gap-5 w-full"></div>
+          </div>
+          <!-- Slide 5: Anotações -->
+          <div class="swiper-slide flex flex-col items-center bg-gray-900 p-6 md:p-12 min-h-[440px]">
+            <h2 class="text-2xl md:text-3xl font-bold mb-6 text-center text-[#a259ff]">Anotações</h2>
+            <div id="anotacoes-list" class="grid grid-cols-1 md:grid-cols-2 gap-5 w-full"></div>
+          </div>
+        </div>
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-next text-[#a259ff]"></div>
+        <div class="swiper-button-prev text-[#a259ff]"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 py-8 border-t border-gray-800">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between">
+        <div class="mb-6 md:mb-0">
+          <div class="flex items-center space-x-2 mb-4">
+            <img src="logo-adpel.png" alt="Logo ADPEL" class="h-10 w-10 rounded-full" />
+            <h3 class="text-xl font-bold">ADPEL</h3>
+          </div>
+          <p class="text-gray-400">Uma comunidade de fé, amor e esperança.</p>
+        </div>
+      </div>
+      <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500">
+        <p>&copy; 2025 ADPEL - Todos os direitos reservados</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Modal de visualização de detalhes -->
+  <div id="modal-visualizacao" class="modal-bg modal-hide fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50">
+    <div id="modal-content" class="bg-gray-900 rounded-lg shadow-2xl relative w-full max-w-2xl mx-4 p-6 animate-fade-in"></div>
+    <button onclick="fecharModal()" class="absolute top-10 right-10 text-white text-3xl font-bold z-50 hover:text-[#a259ff] transition">&times;</button>
+  </div>
+
+  <!-- SwiperJS -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script>
+    // Menu mobile
+    document.getElementById("menu-toggle").addEventListener("click", function () {
+      const menu = document.getElementById("mobile-menu");
+      menu.classList.toggle("hidden");
+    });
+
+    // Swiper central
+    const swiper = new Swiper('.mySwiper', {
+      loop: false,
+      pagination: {
+        el: '.swiper-pagination',
+        clickable: true,
+      },
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+      autoHeight: true,
+      on: {
+        slideChange(sw) {
+          location.hash = "slide-" + sw.activeIndex;
+        }
+      }
+    });
+    if (location.hash && location.hash.startsWith("#slide-")) {
+      const n = Number(location.hash.replace("#slide-", ""));
+      if (!isNaN(n)) swiper.slideTo(n, 0);
+    }
+    document.querySelectorAll('a[href^="#slide-"]').forEach(a => {
+      a.onclick = function(e){
+        e.preventDefault();
+        const n = Number(this.getAttribute("href").replace("#slide-", ""));
+        if (!isNaN(n)) swiper.slideTo(n, 400);
+      }
+    });
+
+    // Modal visualização
+    function abrirModal(contentHtml) {
+      const modal = document.getElementById('modal-visualizacao');
+      document.getElementById('modal-content').innerHTML = contentHtml;
+      modal.classList.remove('modal-hide');
+      modal.classList.add('modal-show');
+    }
+    function fecharModal() {
+      const modal = document.getElementById('modal-visualizacao');
+      modal.classList.remove('modal-show');
+      modal.classList.add('modal-hide');
+      document.getElementById('modal-content').innerHTML = '';
+    }
+    document.getElementById('modal-visualizacao').addEventListener('click', function(e){
+      if(e.target === this) fecharModal();
+    });
+
+    // Helpers
+    function safeHtml(text) {
+      return ("" + text).replace(/[<>&"]/g, c => ({
+        '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;'
+      }[c]));
+    }
+
+    // EVENTOS
+    function renderEventos() {
+  const eventos = JSON.parse(localStorage.getItem("adpel_eventos") || "[]");
+  const list = document.getElementById("eventos-list");
+  list.innerHTML = "";
+  if (!eventos.length) {
+    list.innerHTML = `<div class="text-gray-500 text-center col-span-full">Nenhum evento cadastrado ainda.</div>`;
+    return;
+  }
+  eventos.slice().reverse().forEach(ev => {
+    const card = document.createElement("div");
+    card.className = "bg-gray-800 rounded-lg shadow-lg overflow-hidden flex flex-col hover:scale-[1.03] transition cursor-pointer";
+    card.innerHTML = `
+      <img src="${ev.img}" alt="Imagem do evento" class="w-full h-48 object-cover" />
+      <div class="p-4 flex-1 flex flex-col">
+        <h3 class="text-xl font-bold mb-2">${safeHtml(ev.title)}</h3>
+        <div class="text-gray-400 mb-1 text-sm">
+          Data: ${ev.data ? ev.data.split('-').reverse().join('/') : "-"}<br>
+          Início: <span class="text-[#a259ff]">${ev.horaInicio || '-'}</span>
+          ${ev.horaFim ? `&nbsp;|&nbsp;Término: <span class="text-[#a259ff]">${ev.horaFim}</span>` : ""}
+        </div>
+        <p class="mb-4 flex-1">${safeHtml(ev.desc)}</p>
+        <div class="flex gap-2 mt-auto">
+          <a href="${getGoogleCalendarUrl(ev)}" target="_blank" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs flex items-center gap-1"><i class="fa fa-calendar-plus"></i> Google Agenda</a>
+          <a href="${getWhatsAppMsg(ev)}" target="_blank" class="bg-[#25d366] hover:bg-green-800 text-white px-3 py-1 rounded text-xs flex items-center gap-1"><i class="fa fa-whatsapp"></i> WhatsApp</a>
+          <button class="bg-[#a259ff] hover:bg-violet-700 text-white font-bold py-1 px-4 rounded ml-auto ver-mais">Ver mais</button>
+        </div>
+      </div>
+    `;
+    card.querySelector('.ver-mais').onclick = () => abrirModal(`
+      <img src="${ev.img}" class="w-full max-h-80 object-cover rounded mb-4" />
+      <h3 class="text-2xl font-bold mb-2">${safeHtml(ev.title)}</h3>
+      <div class="text-gray-400 mb-1">
+        Data: ${ev.data ? ev.data.split('-').reverse().join('/') : "-"}<br>
+        Início: <span class="text-[#a259ff]">${ev.horaInicio || '-'}</span>
+        ${ev.horaFim ? `| Término: <span class="text-[#a259ff]">${ev.horaFim}</span>` : ""}
+      </div>
+      <p class="mb-2">${safeHtml(ev.desc)}</p>
+    `);
+    list.appendChild(card);
+  });
+}
+// Helper para Google Agenda
+function getGoogleCalendarUrl(ev) {
+  if (!ev.data) return "#";
+  const data = ev.data.replace(/-/g,"");
+  const hi = (ev.horaInicio||"19:00").replace(":","");
+  const hf = (ev.horaFim||"21:00").replace(":","");
+  const dtStart = data + "T" + hi + "00Z";
+  const dtEnd = data + "T" + hf + "00Z";
+  const url = [
+    "https://calendar.google.com/calendar/render?action=TEMPLATE",
+    "text=" + encodeURIComponent(ev.title||"Evento"),
+    "dates=" + dtStart + "/" + dtEnd,
+    "details=" + encodeURIComponent(ev.desc||""),
+  ].join("&");
+  return url;
+}
+// Helper para WhatsApp
+function getWhatsAppMsg(ev) {
+  let msg = `Evento: ${ev.title}\nQuando: ${ev.data ? ev.data.split('-').reverse().join('/') : "-"}\nInício: ${ev.horaInicio||''}`;
+  if (ev.horaFim) msg += ` até ${ev.horaFim}`;
+  if (ev.desc) msg += `\n${ev.desc}`;
+  return "https://wa.me/?text=" + encodeURIComponent(msg);
+}
+
+
+    // ESCALAS
+function renderEscalas() {
+  const escalas = JSON.parse(localStorage.getItem("adpel_escalas") || "[]");
+  const list = document.getElementById("escalas-list");
+  list.innerHTML = "";
+  if (!escalas.length) {
+    list.innerHTML = `<div class="text-gray-500 text-center col-span-full">Nenhuma escala cadastrada ainda.</div>`;
+    return;
+  }
+  escalas.slice().reverse().forEach(es => {
+    const funcoesHtml = (es.funcoes||[]).map(f => `
+      <div class="flex gap-2 items-center">
+        <span class="font-bold text-[#a259ff]">${safeHtml(f.funcao)}:</span>
+        <span>${safeHtml(f.nomes)}</span>
+      </div>
+    `).join("");
+    const card = document.createElement("div");
+    card.className = "bg-gray-800 rounded-lg shadow-lg overflow-hidden flex flex-col hover:scale-[1.03] transition cursor-pointer mb-6";
+    card.innerHTML = `
+      ${es.img ? `<img src="${es.img}" alt="Imagem da escala" class="w-full h-40 object-cover" />` : ""}
+      <div class="p-4 flex-1 flex flex-col">
+        <h3 class="text-xl font-bold mb-2">${safeHtml(es.title)}</h3>
+        <div class="text-gray-400 mb-2 text-sm">${es.data ? ("Data: " + es.data.split('-').reverse().join('/')) : ""}</div>
+        ${es.obs ? `<div class="mb-2 text-[#a259ff] italic">${safeHtml(es.obs)}</div>` : ""}
+        <div class="mb-2">${funcoesHtml}</div>
+        <div class="flex gap-2 mt-auto">
+          <a href="${getWhatsAppMsgEscala(es)}" target="_blank" class="bg-[#25d366] hover:bg-green-800 text-white px-3 py-1 rounded text-xs flex items-center gap-1"><i class="fa fa-whatsapp"></i> WhatsApp</a>
+          <a href="${getGoogleCalendarUrlEscala(es)}" target="_blank" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs flex items-center gap-1"><i class="fa fa-calendar-plus"></i> Google Agenda</a>
+          <button class="bg-[#a259ff] hover:bg-violet-700 text-white font-bold py-1 px-4 rounded ml-auto ver-mais">Ver mais</button>
+        </div>
+      </div>
+    `;
+    card.querySelector('.ver-mais').onclick = () => abrirModal(`
+      ${es.img ? `<img src="${es.img}" class="w-full max-h-80 object-cover rounded mb-4" />` : ""}
+      <h3 class="text-2xl font-bold mb-2">${safeHtml(es.title)}</h3>
+      <div class="text-gray-400 mb-2">${es.data ? ("Data: " + es.data.split('-').reverse().join('/')) : ""}</div>
+      ${es.obs ? `<div class="mb-2 text-[#a259ff] italic">${safeHtml(es.obs)}</div>` : ""}
+      <div class="mb-4">
+        ${funcoesHtml}
+      </div>
+    `);
+    list.appendChild(card);
+  });
+}
+
+// Helpers das escalas
+function getWhatsAppMsgEscala(es) {
+  let msg = `Escala: ${es.title}\nData: ${es.data ? es.data.split('-').reverse().join('/') : "-"}\n`;
+  if (es.obs) msg += `Obs: ${es.obs}\n`;
+  if (es.funcoes && es.funcoes.length) {
+    es.funcoes.forEach(f => {
+      msg += `${f.funcao}: ${f.nomes}\n`;
+    });
+  }
+  return "https://wa.me/?text=" + encodeURIComponent(msg);
+}
+function getGoogleCalendarUrlEscala(es) {
+  if (!es.data) return "#";
+  const data = es.data.replace(/-/g,"");
+  const dtStart = data + "T190000Z";
+  const dtEnd = data + "T210000Z";
+  let desc = "Escala:\n";
+  if (es.funcoes && es.funcoes.length) {
+    es.funcoes.forEach(f => desc += `${f.funcao}: ${f.nomes}\n`);
+  }
+  if (es.obs) desc += `Obs: ${es.obs}\n`;
+  const url = [
+    "https://calendar.google.com/calendar/render?action=TEMPLATE",
+    "text=" + encodeURIComponent(es.title||"Escala"),
+    "dates=" + dtStart + "/" + dtEnd,
+    "details=" + encodeURIComponent(desc),
+  ].join("&");
+  return url;
+}
+
+
+    // CURSOS (agora abre nova aba com curso.html)
+    function renderCursos() {
+      const cursos = JSON.parse(localStorage.getItem("adpel_cursos") || "[]");
+      const list = document.getElementById("cursos-list");
+      list.innerHTML = "";
+      if (!cursos.length) {
+        list.innerHTML = `<div class="text-gray-500 text-center col-span-full">Nenhum curso cadastrado ainda.</div>`;
+        return;
+      }
+      cursos.slice().reverse().forEach((cu, i) => {
+        const card = document.createElement("div");
+        card.className = "bg-gray-800 rounded-lg shadow-lg overflow-hidden flex flex-col hover:scale-[1.03] transition cursor-pointer";
+        card.innerHTML = `
+          <img src="${cu.img}" alt="Imagem do curso" class="w-full h-48 object-cover" />
+          <div class="p-4 flex-1 flex flex-col">
+            <h3 class="text-xl font-bold mb-2">${safeHtml(cu.title)}</h3>
+            <p class="mb-2">${safeHtml(cu.desc)}</p>
+            <button class="bg-[#a259ff] hover:bg-violet-700 text-white font-bold py-1 px-4 rounded mt-auto self-end ver-mais">Ver mais</button>
+          </div>
+        `;
+        card.querySelector('.ver-mais').onclick = () => {
+          window.open(`curso.html?id=${cu.id}`, "_blank");
+        };
+        list.appendChild(card);
+      });
+    }
+
+    // NOTÍCIAS
+    function renderNoticias() {
+      const noticias = JSON.parse(localStorage.getItem("adpel_noticias") || "[]");
+      const list = document.getElementById("noticias-list");
+      list.innerHTML = "";
+      if (!noticias.length) {
+        list.innerHTML = `<div class="text-gray-500 text-center col-span-full">Nenhuma notícia cadastrada ainda.</div>`;
+        return;
+      }
+      noticias.slice().reverse().forEach(no => {
+        const card = document.createElement("div");
+        card.className = "bg-gray-800 rounded-lg shadow-lg overflow-hidden flex flex-col hover:scale-[1.03] transition cursor-pointer";
+        card.innerHTML = `
+          <img src="${no.img}" alt="Imagem da notícia" class="w-full h-48 object-cover" />
+          <div class="p-4 flex-1 flex flex-col">
+            <h3 class="text-xl font-bold mb-2">${safeHtml(no.title)}</h3>
+            <p class="mb-4 flex-1">${safeHtml(no.desc)}</p>
+            <button class="bg-[#a259ff] hover:bg-violet-700 text-white font-bold py-1 px-4 rounded mt-auto self-end ver-mais">Ver mais</button>
+          </div>
+        `;
+        card.querySelector('.ver-mais').onclick = () => abrirModal(`
+          <img src="${no.img}" class="w-full max-h-80 object-cover rounded mb-4" />
+          <h3 class="text-2xl font-bold mb-2">${safeHtml(no.title)}</h3>
+          <p class="mb-2">${safeHtml(no.desc)}</p>
+        `);
+        list.appendChild(card);
+      });
+    }
+
+    // ANOTAÇÕES
+    function renderAnotacoes() {
+      const anotacoes = JSON.parse(localStorage.getItem("adpel_anotacoes") || "[]");
+      const list = document.getElementById("anotacoes-list");
+      list.innerHTML = "";
+      if (!anotacoes.length) {
+        list.innerHTML = `<div class="text-gray-500 text-center col-span-full">Nenhuma anotação cadastrada ainda.</div>`;
+        return;
+      }
+      anotacoes.slice().reverse().forEach(an => {
+        const card = document.createElement("div");
+        card.className = "bg-gray-800 rounded-lg shadow-lg overflow-hidden flex flex-col hover:scale-[1.03] transition cursor-pointer";
+        card.innerHTML = `
+          <img src="${an.img}" alt="Imagem da anotação" class="w-full h-48 object-cover" />
+          <div class="p-4 flex-1 flex flex-col">
+            <h3 class="text-xl font-bold mb-2">${safeHtml(an.title)}</h3>
+            <p class="mb-4 flex-1">${safeHtml(an.desc)}</p>
+            <button class="bg-[#a259ff] hover:bg-violet-700 text-white font-bold py-1 px-4 rounded mt-auto self-end ver-mais">Ver mais</button>
+          </div>
+        `;
+        card.querySelector('.ver-mais').onclick = () => abrirModal(`
+          <img src="${an.img}" class="w-full max-h-80 object-cover rounded mb-4" />
+          <h3 class="text-2xl font-bold mb-2">${safeHtml(an.title)}</h3>
+          <p class="mb-2">${safeHtml(an.desc)}</p>
+        `);
+        list.appendChild(card);
+      });
+    }
+
+    // Inicializar tudo
+    renderEventos();
+    renderEscalas();
+    renderCursos();
+    renderNoticias();
+    renderAnotacoes();
+  </script>
+</body>
+</html>
